@@ -3,9 +3,9 @@
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="fill_parent"
   android:layout_height="fill_parent" android:orientation="horizontal">
-    <TextView android:id="@+id/workloadTextView" android:text="TextView" android:layout_height="wrap_content" android:layout_alignParentLeft="true" android:layout_width="wrap_content" android:textSize="40px"></TextView>
-    <Button android:text="Start" android:id="@+id/workloadStartButton" android:layout_height="wrap_content" android:layout_toLeftOf="@+id/workloadStopButton" android:layout_width="wrap_content" android:textSize="40px"></Button>
-    <Button android:layout_height="wrap_content" android:id="@+id/workloadStopButton" android:text="Stop" android:layout_alignParentRight="true" android:layout_width="wrap_content" android:textSize="40px"></Button>
-    <ProgressBar style="?android:attr/progressBarStyleHorizontal" android:id="@+id/workloadProgressBar" android:layout_height="wrap_content" android:layout_below="@+id/workloadStartButton" android:layout_alignParentLeft="true" android:layout_width="fill_parent"></ProgressBar>
+    <TextView android:id="@+id/workloadTextView" android:text="TextView" android:layout_height="wrap_content" android:layout_alignParentLeft="true" android:textSize="30px" android:layout_width="fill_parent"></TextView>
+    <Button android:layout_height="wrap_content" android:text="Start" android:textSize="30px" android:id="@+id/workloadStartButton" android:layout_width="wrap_content" android:layout_alignTop="@+id/workloadStopButton" android:layout_toLeftOf="@+id/workloadStopButton"></Button>
+    <Button android:layout_height="wrap_content" android:text="Stop" android:textSize="30px" android:id="@+id/workloadStopButton" android:layout_width="wrap_content" android:layout_below="@+id/workloadTextView" android:layout_alignParentRight="true"></Button>
+    <ProgressBar style="?android:attr/progressBarStyleHorizontal" android:id="@+id/workloadProgressBar" android:layout_height="wrap_content" android:layout_width="wrap_content" android:layout_alignTop="@+id/workloadStartButton" android:layout_alignParentLeft="true" android:layout_marginTop="14dp" android:layout_toLeftOf="@+id/workloadStartButton"></ProgressBar>
     
 </RelativeLayout>
