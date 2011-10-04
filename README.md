@@ -1,5 +1,9 @@
 # Couchbase Android Tester
 
+## Quick Start
+
+A binary of this utility can be downloaded from https://github.com/downloads/mschoch/CouchbaseAndroidTester/CouchbaseAndroidTester.apk
+
 ## Getting Started
 
 This project requires the latest version of Couchbase Mobile for Android.  This is the only
