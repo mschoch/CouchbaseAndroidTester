@@ -17,6 +17,7 @@ public class WorkloadHelper {
 		ArrayList<String> result = new ArrayList<String>();
 		result.add("com.couchbase.androidtester.workloads.impl.CreateDocuments");
 		result.add("com.couchbase.androidtester.workloads.impl.CRUDDocuments");
+		result.add("com.couchbase.androidtester.workloads.impl.CancelPullReplication");
 		return result;
     }
 

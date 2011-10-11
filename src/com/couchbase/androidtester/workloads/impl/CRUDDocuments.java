@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.ektorp.CouchDbConnector;
+import org.ektorp.UpdateConflictException;
 
 import android.util.Log;
 
@@ -43,7 +44,11 @@ public class CRUDDocuments extends CouchbaseWorkload {
 
 			//update
 			documentRead.put("updated", "true");
-			couchDbConnector.update(documentRead);
+			try {
+				couchDbConnector.update(documentRead);
+			} catch (UpdateConflictException e) {
+			    Log.v(CouchbaseAndroidTesterActivity.TAG, "Update Conflict", e);
+			}
 			progress++;
 
 			//delete
