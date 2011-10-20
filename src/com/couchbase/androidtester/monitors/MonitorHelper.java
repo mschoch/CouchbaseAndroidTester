@@ -17,6 +17,7 @@ public class MonitorHelper {
 		ArrayList<String> result = new ArrayList<String>();
 		result.add("com.couchbase.androidtester.monitors.impl.CouchbaseServiceMonitor");
 		result.add("com.couchbase.androidtester.monitors.impl.BatteryLevelMonitor");
+		result.add("com.couchbase.androidtester.monitors.impl.NetworkStatusMonitor");
 		result.add("com.couchbase.androidtester.monitors.impl.MemoryMonitor");
 		return result;
 	}
