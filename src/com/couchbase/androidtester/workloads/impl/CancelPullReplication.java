@@ -11,13 +11,8 @@ import com.couchbase.androidtester.workloads.CouchbaseWorkload;
 
 public class CancelPullReplication extends CouchbaseWorkload {
 
-    public static final String DATABASE_NAME = "workload";
-
     @Override
     protected String performWork() {
-
-        couchDbInstance.createConnector(DATABASE_NAME, true);
-
 
         Thread replicate = new Thread(new Runnable() {
 
@@ -26,7 +21,7 @@ public class CancelPullReplication extends CouchbaseWorkload {
 
                 ReplicationCommand pullReplicationCommand = new ReplicationCommand.Builder()
                 .source("http://couchbase.iriscouch.com/grocery-sync")
-                .target(DATABASE_NAME)
+                .target(CouchbaseAndroidTesterActivity.DEFAULT_WORKLOAD_DB)
                 .build();
 
                 Log.v(CouchbaseAndroidTesterActivity.TAG, "Starting Replication");
@@ -48,7 +43,7 @@ public class CancelPullReplication extends CouchbaseWorkload {
 
                 ReplicationCommand pullReplicationCancelCommand = new ReplicationCommand.Builder()
                 .source("http://couchbase.iriscouch.com/grocery-sync")
-                .target(DATABASE_NAME)
+                .target(CouchbaseAndroidTesterActivity.DEFAULT_WORKLOAD_DB)
                 .cancel(true)
                 .build();
 
@@ -67,8 +62,8 @@ public class CancelPullReplication extends CouchbaseWorkload {
 
         try {
             replicate.start();
-            //wait 2 seconds
-            Thread.sleep(2 * 1000);
+            //wait 10 seconds
+            Thread.sleep(10 * 1000);
             replicateCancel.start();
 
             //wait for these threads to finish to end workload

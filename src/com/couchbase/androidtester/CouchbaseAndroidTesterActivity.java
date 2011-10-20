@@ -1,15 +1,20 @@
 package com.couchbase.androidtester;
 
+import java.util.Arrays;
 import java.util.List;
 
+import org.ektorp.CouchDbConnector;
 import org.ektorp.CouchDbInstance;
+import org.ektorp.DbAccessException;
 import org.ektorp.android.http.AndroidHttpClient;
+import org.ektorp.android.util.EktorpAsyncTask;
 import org.ektorp.http.HttpClient;
 import org.ektorp.impl.StdCouchDbInstance;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -32,6 +37,8 @@ import com.couchbase.androidtester.workloads.WorkloadHelper;
 public class CouchbaseAndroidTesterActivity extends Activity {
 
 	public static final String TAG = "CouchbaseTester";
+
+	public static final String DEFAULT_WORKLOAD_DB = "workload";
 
 	/**
 	 * List of monitors
@@ -72,6 +79,11 @@ public class CouchbaseAndroidTesterActivity extends Activity {
 	 * CouchDbIntsance of the embedded Couch
 	 */
 	private CouchDbInstance couchDbInstance;
+
+	/**
+	 * CouchDbConnector of the default database
+	 */
+	private CouchDbConnector couchDbConnector;
 
 	/**
 	 * Startup Progress Dialog
@@ -150,15 +162,53 @@ public class CouchbaseAndroidTesterActivity extends Activity {
 			HttpClient httpClient = new AndroidHttpClient.Builder().host(host).port(port).build();
 			couchDbInstance = new StdCouchDbInstance(httpClient);
 
-			//iterate through all the workloads and give them reference to Couch
-			for (CouchbaseWorkload workload : workloads) {
-				workload.setCouchDbInstance(couchDbInstance);
-			}
+			//now create a default database for workloads to use
+			EktorpAsyncTask createDefaultDb = new EktorpAsyncTask() {
 
-			//remove the progress dialog
-			if(startupDialog != null) {
-				startupDialog.hide();
-			}
+                @Override
+                protected void doInBackground() {
+                    couchDbConnector = couchDbInstance.createConnector(DEFAULT_WORKLOAD_DB, true);
+                }
+
+                @Override
+                protected void onDbAccessException(
+                        DbAccessException dbAccessException) {
+                    Log.e(TAG, "Error Creating Default Workload Database", dbAccessException);
+                }
+
+                @Override
+                protected void onSuccess() {
+                    //iterate through all the workloads and give them reference to Couch
+                    for (CouchbaseWorkload workload : workloads) {
+                        workload.setCouchDbInstance(couchDbInstance);
+                        workload.setCouchDbConnector(couchDbConnector);
+                    }
+
+                    //remove the progress dialog
+                    if(startupDialog != null) {
+                        startupDialog.hide();
+                    }
+
+                    //see if we were requested to start any workloads
+                    Intent intent = getIntent();
+                    if(intent != null) {
+                        String startWorkloadString = intent.getStringExtra("WORKLOAD");
+                        if(startWorkloadString != null) {
+                            Log.d(TAG, "Requested to start workload " + startWorkloadString);
+                            List<String> startWorkloads = Arrays.asList(startWorkloadString.split(","));
+
+                            for (CouchbaseWorkload workload : workloads) {
+                                if(startWorkloads.contains(workload.getClass().getName())) {
+                                    Log.d(TAG, "Starting workload " + workload.getName());
+                                    workload.start();
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            createDefaultDb.execute();
 
 		};
 

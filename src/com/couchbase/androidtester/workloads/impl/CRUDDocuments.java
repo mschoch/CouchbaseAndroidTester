@@ -3,7 +3,6 @@ package com.couchbase.androidtester.workloads.impl;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.ektorp.CouchDbConnector;
 import org.ektorp.UpdateConflictException;
 
 import android.util.Log;
@@ -22,7 +21,6 @@ public class CRUDDocuments extends CouchbaseWorkload {
 
 	@Override
 	protected String performWork() {
-		CouchDbConnector couchDbConnector = couchDbInstance.createConnector("workload", true);
 
 		int documentsCreated = 0;
 		while(!task.isCancelled() && (documentsCreated < numberOfDocuments)) {
