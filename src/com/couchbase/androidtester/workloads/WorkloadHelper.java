@@ -18,6 +18,8 @@ public class WorkloadHelper {
 		result.add("com.couchbase.androidtester.workloads.impl.CreateDocuments");
 		result.add("com.couchbase.androidtester.workloads.impl.CRUDDocuments");
 		result.add("com.couchbase.androidtester.workloads.impl.CancelPullReplication");
+		result.add("com.couchbase.androidtester.workloads.impl.PhotoShare");
+		result.add("com.couchbase.androidtester.workloads.impl.ContinuousReplication");
 		return result;
     }
 
