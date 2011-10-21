@@ -182,6 +182,7 @@ public class CouchbaseAndroidTesterActivity extends Activity {
                     for (CouchbaseWorkload workload : workloads) {
                         workload.setCouchDbInstance(couchDbInstance);
                         workload.setCouchDbConnector(couchDbConnector);
+                        workload.setContext(CouchbaseAndroidTesterActivity.this);
                     }
 
                     //remove the progress dialog

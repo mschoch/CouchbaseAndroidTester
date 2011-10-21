@@ -3,6 +3,7 @@ package com.couchbase.androidtester.workloads;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.CouchDbInstance;
 
+import android.content.Context;
 import android.os.AsyncTask;
 
 public abstract class CouchbaseWorkload {
@@ -11,6 +12,7 @@ public abstract class CouchbaseWorkload {
 	protected CouchDbInstance couchDbInstance;
 	protected CouchDbConnector couchDbConnector;
 	protected CouchbaseWorkloadTask task = null;
+	protected Context context = null;
 	protected int progress = 0;
 	protected int total = 100;
 	protected boolean indeterminate = true;
@@ -25,6 +27,10 @@ public abstract class CouchbaseWorkload {
 
 	public void setCouchDbConnector(CouchDbConnector couchDbConnector) {
 	    this.couchDbConnector = couchDbConnector;
+	}
+
+	public void setContext(Context context) {
+	    this.context = context;
 	}
 
 	public String getName() {
