@@ -3,6 +3,7 @@ package com.couchbase.androidtester.workloads.impl;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import org.ektorp.AttachmentInputStream;
 
@@ -14,21 +15,13 @@ import com.couchbase.androidtester.workloads.CouchbaseWorkload;
 
 public class PhotoShare extends CouchbaseWorkload {
 
-    private static int numberOfPhotos = 1000;
-    private static int delayBetweenPosts = 1000;
-
-    public PhotoShare() {
-        indeterminate = false;
-        total = numberOfPhotos;
-    }
-
     @Override
     protected String performWork() {
 
         AssetManager assetManager = context.getAssets();
 
         int photosUploaded = 0;
-        while(!task.isCancelled() && (photosUploaded < numberOfPhotos)) {
+        while(!task.isCancelled()) {
 
             Map<String,Object> document = documentTemplate();
             couchDbConnector.create(document);
@@ -44,13 +37,13 @@ public class PhotoShare extends CouchbaseWorkload {
                 AttachmentInputStream ais = new AttachmentInputStream(filename, assetManager.open("attachments/images/" + filename), "image/jpeg");
                 couchDbConnector.createAttachment(id, rev, ais);
                 photosUploaded++;
-                progress++;
                 task.publishWorkProgress("Uploaded Photo " + photosUploaded);
             } catch (IOException e) {
                 Log.e(CouchbaseAndroidTesterActivity.TAG, "Error reading attachment", e);
             }
 
             try {
+                int delayBetweenPosts = 1000 * (500 + new Random().nextInt(500));
                 Thread.sleep(delayBetweenPosts);
             } catch (InterruptedException e) {
                 //ignore
@@ -124,7 +117,7 @@ public class PhotoShare extends CouchbaseWorkload {
 
     @Override
     public String getName() {
-        return "PhotoShare 1000 Documents";
+        return "Upload Photos";
     }
 
 }
