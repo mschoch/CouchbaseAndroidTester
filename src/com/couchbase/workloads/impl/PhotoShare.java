@@ -1,4 +1,4 @@
-package com.couchbase.androidtester.workloads.impl;
+package com.couchbase.workloads.impl;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -6,22 +6,22 @@ import java.util.Map;
 import java.util.Random;
 
 import org.ektorp.AttachmentInputStream;
-
-import android.content.res.AssetManager;
-import android.util.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.couchbase.androidtester.CouchbaseAndroidTesterActivity;
-import com.couchbase.androidtester.workloads.CouchbaseWorkload;
+import com.couchbase.workloads.CouchbaseWorkload;
 
 public class PhotoShare extends CouchbaseWorkload {
+
+    private final static Logger LOG = LoggerFactory
+            .getLogger(PhotoShare.class);
 
     @Override
     protected String performWork() {
 
-        AssetManager assetManager = context.getAssets();
-
         int photosUploaded = 0;
-        while(!task.isCancelled()) {
+        while(!thread.isCancelled()) {
 
             Map<String,Object> document = documentTemplate();
             couchDbConnector.create(document);
@@ -34,12 +34,12 @@ public class PhotoShare extends CouchbaseWorkload {
             }
 
             try {
-                AttachmentInputStream ais = new AttachmentInputStream(filename, assetManager.open("attachments/images/" + filename), "image/jpeg");
+                AttachmentInputStream ais = new AttachmentInputStream(filename, workloadRunner.openResource("attachments/images/" + filename), "image/jpeg");
                 couchDbConnector.createAttachment(id, rev, ais);
                 photosUploaded++;
-                task.publishWorkProgress("Uploaded Photo " + photosUploaded);
+                //task.publishWorkProgress("Uploaded Photo " + photosUploaded);
             } catch (IOException e) {
-                Log.e(CouchbaseAndroidTesterActivity.TAG, "Error reading attachment", e);
+                LOG.error(CouchbaseAndroidTesterActivity.TAG, "Error reading attachment", e);
             }
 
             try {
@@ -54,7 +54,7 @@ public class PhotoShare extends CouchbaseWorkload {
 
         String resultMessage = "" +  photosUploaded + " photos uploaded";
 
-        if(task.isCancelled()) {
+        if(thread.isCancelled()) {
             resultMessage = "Cancelled PhotoShare after " + resultMessage;
         }
         else {

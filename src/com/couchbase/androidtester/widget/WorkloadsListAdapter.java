@@ -1,8 +1,11 @@
 package com.couchbase.androidtester.widget;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -13,8 +16,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.couchbase.androidtester.R;
-import com.couchbase.androidtester.workloads.CouchbaseWorkload;
-import com.couchbase.androidtester.workloads.CouchbaseWorkloadRunner;
+import com.couchbase.workloads.CouchbaseWorkload;
+import com.couchbase.workloads.CouchbaseWorkloadRunner;
 
 public class WorkloadsListAdapter extends ArrayAdapter<CouchbaseWorkload> implements OnClickListener, CouchbaseWorkloadRunner {
 
@@ -105,6 +108,12 @@ public class WorkloadsListAdapter extends ArrayAdapter<CouchbaseWorkload> implem
     		String progressMessage) {
 
     	notifyDataSetChanged();
+    }
+
+    @Override
+    public InputStream openResource(String path) throws IOException {
+        AssetManager assetManager = context.getAssets();
+        return assetManager.open(path);
     }
 
 }

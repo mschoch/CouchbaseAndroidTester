@@ -1,15 +1,19 @@
-package com.couchbase.androidtester.workloads.impl;
+package com.couchbase.workloads.impl;
 
 import org.ektorp.DbAccessException;
 import org.ektorp.ReplicationCommand;
 import org.ektorp.ReplicationStatus;
-
-import android.util.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.couchbase.androidtester.CouchbaseAndroidTesterActivity;
-import com.couchbase.androidtester.workloads.CouchbaseWorkload;
+import com.couchbase.workloads.CouchbaseWorkload;
+import com.couchbase.workloads.WorkloadHelper;
 
 public class ContinuousReplication extends CouchbaseWorkload {
+
+    private final static Logger LOG = LoggerFactory
+            .getLogger(ContinuousReplication.class);
 
     private static String defaultReplication = "http://mschoch.ic.ht/android";
 
@@ -18,35 +22,35 @@ public class ContinuousReplication extends CouchbaseWorkload {
 
         ReplicationCommand pullReplicationCommand = new ReplicationCommand.Builder()
         .source(defaultReplication)
-        .target(CouchbaseAndroidTesterActivity.DEFAULT_WORKLOAD_DB)
+        .target(WorkloadHelper.DEFAULT_WORKLOAD_DB)
         .continuous(true)
         .build();
 
-        Log.v(CouchbaseAndroidTesterActivity.TAG, "Starting Continuous Pull Replication");
+        LOG.debug(CouchbaseAndroidTesterActivity.TAG, "Starting Continuous Pull Replication");
         ReplicationStatus pullStatus;
         try {
             pullStatus = couchDbInstance.replicate(pullReplicationCommand);
-            Log.v(CouchbaseAndroidTesterActivity.TAG, "Finished Replication: " + pullStatus.isOk());
+            LOG.debug(CouchbaseAndroidTesterActivity.TAG, "Finished Replication: " + pullStatus.isOk());
         } catch (DbAccessException e) {
-            Log.v(CouchbaseAndroidTesterActivity.TAG, "Replication Error: ", e);
+            LOG.debug(CouchbaseAndroidTesterActivity.TAG, "Replication Error: ", e);
         }
 
         ReplicationCommand pushReplicationCommand = new ReplicationCommand.Builder()
-        .source(CouchbaseAndroidTesterActivity.DEFAULT_WORKLOAD_DB)
+        .source(WorkloadHelper.DEFAULT_WORKLOAD_DB)
         .target(defaultReplication)
         .continuous(true)
         .build();
 
-        Log.v(CouchbaseAndroidTesterActivity.TAG, "Starting Continuous Push Replication");
+        LOG.debug(CouchbaseAndroidTesterActivity.TAG, "Starting Continuous Push Replication");
         ReplicationStatus pushStatus;
         try {
             pushStatus = couchDbInstance.replicate(pushReplicationCommand);
-            Log.v(CouchbaseAndroidTesterActivity.TAG, "Finished Replication: " + pushStatus.isOk());
+            LOG.debug(CouchbaseAndroidTesterActivity.TAG, "Finished Replication: " + pushStatus.isOk());
         } catch (DbAccessException e) {
-            Log.v(CouchbaseAndroidTesterActivity.TAG, "Replication Error: ", e);
+            LOG.debug(CouchbaseAndroidTesterActivity.TAG, "Replication Error: ", e);
         }
 
-        while(!task.isCancelled()) {
+        while(!thread.isCancelled()) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {

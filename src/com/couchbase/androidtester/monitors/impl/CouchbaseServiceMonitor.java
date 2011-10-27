@@ -1,7 +1,9 @@
 package com.couchbase.androidtester.monitors.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -15,6 +17,8 @@ import com.couchbase.androidtester.monitors.CouchbasePassiveMonitor;
 public class CouchbaseServiceMonitor extends CouchbasePassiveMonitor {
 
 	private static String currentValue = "Not Running";
+	private static String host;
+	private static int port;
 
 	@Override
 	public void start() {
@@ -34,8 +38,8 @@ public class CouchbaseServiceMonitor extends CouchbasePassiveMonitor {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			if(CouchbaseStarted.ACTION.equals(intent.getAction())) {
-				String host = CouchbaseStarted.getHost(intent);
-				int port = CouchbaseStarted.getPort(intent);
+				host = CouchbaseStarted.getHost(intent);
+				port = CouchbaseStarted.getPort(intent);
 				currentValue = "Listening on " + host + ":" + port;
 				monitorDisplay.valueChanged();
 			}
@@ -47,15 +51,31 @@ public class CouchbaseServiceMonitor extends CouchbasePassiveMonitor {
 		}
 	};
 
-	public String getName() {
+	public String getDisplayName() {
 		return "Couchbase";
 	};
+
+	@Override
+	public String getSystemName() {
+	    return "couchbase";
+	}
 
 	@Override
 	public List<String> currentMeasures() {
 		ArrayList<String> result = new ArrayList<String>();
 		result.add(currentValue);
 		return result;
+	}
+
+	@Override
+	public Map<String, Object> currentMeasuresJson() {
+	    Map<String, Object> result = new HashMap<String, Object>();
+	    result.put("status", currentValue);
+	    if(host != null) {
+	        result.put("host", host);
+	        result.put("port", port);
+	    }
+	    return result;
 	}
 
 }

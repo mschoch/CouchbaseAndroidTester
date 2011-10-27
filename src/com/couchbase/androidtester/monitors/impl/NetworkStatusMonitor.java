@@ -1,7 +1,9 @@
 package com.couchbase.androidtester.monitors.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -35,6 +37,14 @@ public class NetworkStatusMonitor extends CouchbasePassiveMonitor {
         return result;
     }
 
+    @Override
+    public Map<String, Object> currentMeasuresJson() {
+        Map<String, Object> result = new HashMap<String, Object>();
+        result.put("connected", connectedMessage);
+        result.put("type", typeMessage);
+        return result;
+    }
+
     private BroadcastReceiver networkReceiver = new BroadcastReceiver() {
 
         @Override
@@ -54,8 +64,12 @@ public class NetworkStatusMonitor extends CouchbasePassiveMonitor {
         }
     };
 
-    public String getName() {
+    public String getDisplayName() {
         return "Network Status";
     }
 
+    @Override
+    public String getSystemName() {
+        return "network";
+    }
 }

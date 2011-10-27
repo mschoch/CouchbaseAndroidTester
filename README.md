@@ -1,15 +1,67 @@
 # Couchbase Android Tester
 
-## Quick Start
-
-A binary of this utility can be downloaded from https://github.com/downloads/mschoch/CouchbaseAndroidTester/CouchbaseAndroidTester.apk
-
 ## Getting Started
 
 This project requires the latest version of Couchbase Mobile for Android.  This is the only
 dependency not included in the project source tree.  Please follow the instructions from
 http://www.couchbase.org/get/couchbase-mobile-for-android/current to get and install the latest
 version of Couchbase Mobile for Android.
+
+## Running workloads from an Android device through the UI
+
+The simplest way to start workloads is by pressing the Start button from the workloads tab in the UI.
+
+## Running workloads from an Android device from the command-line
+
+    adb -e shell am start -a android.intent.action.MAIN -n com.couchbase.androidtester/.CouchbaseAndroidTesterActivity -e WORKLOAD com.couchbase.workloads.impl.CRUDDocuments
+
+NOTE: the value for the WORKLOAD parameter can be a comma-separated list of workloads to be run
+
+## Running workloads with Java from the command-line
+
+    java -cp bin:libs/org.ektorp-1.2.2-SNAPSHOT.jar:libs/slf4j-api-1.6.1.jar:libs/slf4j-jdk14-1.6.1.jar:javalibs/httpclient-4.1.1.jar:javalibs/httpcore-4.1.jar:javalibs/commons-logging-1.1.1.jar:javalibs/httpclient-cache-4.1.1.jar:libs/jackson-core-asl-1.8.5.jar:libs/jackson-mapper-asl-1.8.5.jar com.couchbase.javatester.JavaTester com.couchbase.workloads.impl.PhotoShare,com.couchbase.workloads.impl.FiveMinuteIntervalReplication < couch_urls.txt
+    
+NOTE: the single command-line argument accepted is a comma-delimited list of workloads to be run.  A list of CouchDB server URLs must be provided on standard input, 1 URL per line (see the couch_urls.txt file for an example of the format)
+
+## Provided Workloads
+
+- CRUD Documents
+
+Create, Read, Update and Delete documents in sequence
+
+- Photo Share
+
+Create Documents and Attach Photos
+
+- Calendar Usage
+
+Create and Update Calendar Events
+
+- Continuous Replication
+
+Continuous bi-directional replication of the workload database to the cloud
+
+- Five Minute Interval Replication
+
+Non-continuous replication of the workload database at 5 minute intervals
+
+## Provided Monitors
+
+- Battery Level
+
+Records the current battery level and plug status
+
+- Couchbase
+
+Records the status of Couchbase and the host/port
+
+- Memory
+
+Records various memory statistics provided by the Android platform
+
+- Network
+
+Records the network status and network interface type
 
 ## Adding your own workloads
 
@@ -23,28 +75,12 @@ To have your workload class show up in the UI, you must register it in WorkloadH
 
 ### Customizing the name displayed in the UI
 
-To customize the name displayed in the UI, override the getName() method of CouchbaseWorkload.
-
-### Displaying workload progress in the UI
-
-To show the progress of the workload in the UI, add a constructor to your workload class and
-initialize the following variables.
-
-<pre>
-        indeterminate = false;
-        total = //some integer representing the total number of steps
-</pre> 
-
-Then, as your workload performs work, update the progress variable accordingly:
-
-<pre>
-        progress++;
-</pre>
+To customize the name displayed in the UI, override the getDisplayName() method of CouchbaseWorkload.
 
 ### Making sure its possible to stop the workload
 
 To ensure your workload can be stopped when requested by the user, your workload should
-periodically check the status of task.isCancelled().  If this returns true, your performWork()
+periodically check the status of thread.isCancelled().  If this returns true, your performWork()
 method should return as soon as possible.
 
 ## Adding your own performance monitors

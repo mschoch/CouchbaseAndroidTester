@@ -1,7 +1,7 @@
 package com.couchbase.androidtester.monitors;
 
 import java.util.List;
-
+import java.util.Map;
 
 import android.content.Context;
 
@@ -15,8 +15,11 @@ public interface CouchbaseMonitor {
 
 	void stop();
 
-	String getName();
+	String getDisplayName();
+
+	String getSystemName();
 
 	List<String> currentMeasures();
+	Map<String, Object> currentMeasuresJson();
 
 }

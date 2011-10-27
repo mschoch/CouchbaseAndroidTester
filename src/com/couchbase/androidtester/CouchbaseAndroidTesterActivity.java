@@ -31,14 +31,14 @@ import com.couchbase.androidtester.monitors.CouchbaseMonitor;
 import com.couchbase.androidtester.monitors.MonitorHelper;
 import com.couchbase.androidtester.widget.MonitorsListAdapter;
 import com.couchbase.androidtester.widget.WorkloadsListAdapter;
-import com.couchbase.androidtester.workloads.CouchbaseWorkload;
-import com.couchbase.androidtester.workloads.WorkloadHelper;
+import com.couchbase.workloads.CouchbaseWorkload;
+import com.couchbase.workloads.WorkloadHelper;
 
 public class CouchbaseAndroidTesterActivity extends Activity {
 
 	public static final String TAG = "CouchbaseTester";
 
-	public static final String DEFAULT_WORKLOAD_DB = "workload";
+	public static final String TEST_RESULTS_DB = "test-results";
 
 	/**
 	 * List of monitors
@@ -84,6 +84,11 @@ public class CouchbaseAndroidTesterActivity extends Activity {
 	 * CouchDbConnector of the default database
 	 */
 	private CouchDbConnector couchDbConnector;
+
+	/**
+     * CouchDbConnector of the results database
+     */
+    private CouchDbConnector couchDbConnectorResults;
 
 	/**
 	 * Startup Progress Dialog
@@ -167,7 +172,8 @@ public class CouchbaseAndroidTesterActivity extends Activity {
 
                 @Override
                 protected void doInBackground() {
-                    couchDbConnector = couchDbInstance.createConnector(DEFAULT_WORKLOAD_DB, true);
+                    couchDbConnector = couchDbInstance.createConnector(WorkloadHelper.DEFAULT_WORKLOAD_DB, true);
+                    couchDbConnectorResults = couchDbInstance.createConnector(TEST_RESULTS_DB, true);
                 }
 
                 @Override
@@ -182,13 +188,16 @@ public class CouchbaseAndroidTesterActivity extends Activity {
                     for (CouchbaseWorkload workload : workloads) {
                         workload.setCouchDbInstance(couchDbInstance);
                         workload.setCouchDbConnector(couchDbConnector);
-                        workload.setContext(CouchbaseAndroidTesterActivity.this);
                     }
 
                     //remove the progress dialog
                     if(startupDialog != null) {
                         startupDialog.hide();
                     }
+
+                    //start the process to log monitor data
+                    MonitorLogAsyncTask logAsyncTask = new MonitorLogAsyncTask(CouchbaseAndroidTesterActivity.this, couchDbConnectorResults, monitors);
+                    logAsyncTask.execute();
 
                     //see if we were requested to start any workloads
                     Intent intent = getIntent();

@@ -19,7 +19,7 @@ public abstract class CouchbasePassiveMonitor implements CouchbaseMonitor {
 		this.context = context;
 	}
 
-	public String getName() {
+	public String getDisplayName() {
 		return this.getClass().getName();
 	}
 

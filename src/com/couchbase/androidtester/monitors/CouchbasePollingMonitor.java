@@ -1,24 +1,26 @@
 package com.couchbase.androidtester.monitors;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.Map;
 
 import android.content.Context;
 import android.os.AsyncTask;
 
-public abstract class CouchbasePollingMonitor extends AsyncTask<Void, String, Void> implements CouchbaseMonitor {
+public abstract class CouchbasePollingMonitor extends AsyncTask<Void, Void, Void> implements CouchbaseMonitor {
 
 	public static final int POLL_INTERVAL = 1000;
 	protected CouchbaseMonitorDisplay monitorDisplay;
 	protected Context context;
 	protected List<String> currentMeasures = new ArrayList<String>();
+	protected Map<String, Object> currentMeasuresJson = new HashMap<String, Object>();
 
 	@Override
 	protected Void doInBackground(Void... params) {
 		while(!isCancelled()) {
-			String[] monitorValues = getMonitorValues();
-			publishProgress(monitorValues);
+			getMonitorValues();
+			publishProgress();
 			try {
 				Thread.sleep(POLL_INTERVAL);
 			} catch (InterruptedException e) {
@@ -29,11 +31,7 @@ public abstract class CouchbasePollingMonitor extends AsyncTask<Void, String, Vo
 	}
 
 	@Override
-	protected void onProgressUpdate(String... values) {
-		currentMeasures = new ArrayList<String>();
-		for (String measure : values) {
-			currentMeasures.add(measure);
-		}
+	protected void onProgressUpdate(Void... progress) {
 		monitorDisplay.valueChanged();
 	}
 
@@ -48,13 +46,18 @@ public abstract class CouchbasePollingMonitor extends AsyncTask<Void, String, Vo
 		this.context = context;
 	}
 
-	public String getName() {
+	public String getDisplayName() {
 		return this.getClass().getName();
 	}
 
 	@Override
 	public List<String> currentMeasures() {
 		return currentMeasures;
+	}
+
+	@Override
+	public Map<String, Object> currentMeasuresJson() {
+	    return currentMeasuresJson;
 	}
 
 	@Override
@@ -67,6 +70,6 @@ public abstract class CouchbasePollingMonitor extends AsyncTask<Void, String, Vo
 		this.cancel(true);
 	}
 
-	public abstract String[] getMonitorValues();
+	public abstract void getMonitorValues();
 
 }

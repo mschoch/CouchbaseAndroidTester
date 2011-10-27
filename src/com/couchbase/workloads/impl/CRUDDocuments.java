@@ -1,62 +1,53 @@
-package com.couchbase.androidtester.workloads.impl;
+package com.couchbase.workloads.impl;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.ektorp.UpdateConflictException;
-
-import android.util.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.couchbase.androidtester.CouchbaseAndroidTesterActivity;
-import com.couchbase.androidtester.workloads.CouchbaseWorkload;
+import com.couchbase.workloads.CouchbaseWorkload;
 
 public class CRUDDocuments extends CouchbaseWorkload {
 
-	private static int numberOfDocuments = 1000;
-
-	public CRUDDocuments() {
-		indeterminate = false;
-		total = 4 * numberOfDocuments;
-	}
+    private final static Logger LOG = LoggerFactory
+            .getLogger(CRUDDocuments.class);
 
 	@Override
 	protected String performWork() {
 
 		int documentsCreated = 0;
-		while(!task.isCancelled() && (documentsCreated < numberOfDocuments)) {
+		while(!thread.isCancelled()) {
 
 			//create
 			HashMap<String, String> document = documentTemplate();
 			couchDbConnector.create(document);
 			documentsCreated++;
-			progress++;
-			task.publishWorkProgress("Created Document " + documentsCreated);
 
 			String documentId = document.get("_id");
-			Log.v(CouchbaseAndroidTesterActivity.TAG, "Document created got id " + documentId);
+			LOG.debug(CouchbaseAndroidTesterActivity.TAG, "Document created got id " + documentId);
 
 			//read
 			@SuppressWarnings("unchecked")
 			Map<String, Object> documentRead = couchDbConnector.get(Map.class, documentId);
-			progress++;
 
 			//update
 			documentRead.put("updated", "true");
 			try {
 				couchDbConnector.update(documentRead);
 			} catch (UpdateConflictException e) {
-			    Log.v(CouchbaseAndroidTesterActivity.TAG, "Update Conflict", e);
+			    LOG.debug(CouchbaseAndroidTesterActivity.TAG, "Update Conflict", e);
 			}
-			progress++;
 
 			//delete
 			couchDbConnector.delete(documentRead);
-			progress++;
 		}
 
 		String resultMessage = "" +  documentsCreated + " documents";
 
-		if(task.isCancelled()) {
+		if(thread.isCancelled()) {
 			resultMessage = "Cancelled CRUD after " + resultMessage;
 		}
 		else {
@@ -74,7 +65,7 @@ public class CRUDDocuments extends CouchbaseWorkload {
 
 	@Override
 	public String getName() {
-		return "CRUD 1000 Documents";
+		return "CRUD Documents";
 	}
 
 }

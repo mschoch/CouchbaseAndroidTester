@@ -69,7 +69,7 @@ public class MonitorsListAdapter extends BaseExpandableListAdapter implements Co
 
     public Object getGroup(int groupPosition) {
         CouchbaseMonitor monitor = monitors.get(groupPosition);
-        return monitor.getName();
+        return monitor.getDisplayName();
     }
 
     public int getGroupCount() {

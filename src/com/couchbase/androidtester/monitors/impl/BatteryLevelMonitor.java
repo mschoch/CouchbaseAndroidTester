@@ -1,7 +1,9 @@
 package com.couchbase.androidtester.monitors.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -13,6 +15,7 @@ import com.couchbase.androidtester.monitors.CouchbasePassiveMonitor;
 
 public class BatteryLevelMonitor extends CouchbasePassiveMonitor {
 
+    private int rawBatteryLevel;
 	private String batteryLevelMessage = "Unknown";
 	private String pluggedMessage = "Unknown";
 
@@ -30,8 +33,8 @@ public class BatteryLevelMonitor extends CouchbasePassiveMonitor {
 	private BroadcastReceiver batteryReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
-			batteryLevelMessage = "" + level + "%";
+			rawBatteryLevel = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
+			batteryLevelMessage = "" + rawBatteryLevel + "%";
 
 			int plugged = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0);
 			switch(plugged) {
@@ -50,9 +53,14 @@ public class BatteryLevelMonitor extends CouchbasePassiveMonitor {
 		}
 	};
 
-	public String getName() {
+	public String getDisplayName() {
 		return "Battery Level";
 	};
+
+	@Override
+	public String getSystemName() {
+	    return "battery";
+	}
 
 	@Override
 	public List<String> currentMeasures() {
@@ -60,6 +68,14 @@ public class BatteryLevelMonitor extends CouchbasePassiveMonitor {
 		result.add(batteryLevelMessage);
 		result.add(pluggedMessage);
 		return result;
+	}
+
+	@Override
+	public Map<String, Object> currentMeasuresJson() {
+	    Map<String, Object> result = new HashMap<String, Object>();
+	    result.put("batteryLevel", rawBatteryLevel);
+	    result.put("plugStatus", pluggedMessage);
+	    return result;
 	}
 
 }
