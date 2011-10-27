@@ -15,13 +15,11 @@ public class ContinuousReplication extends CouchbaseWorkload {
     private final static Logger LOG = LoggerFactory
             .getLogger(ContinuousReplication.class);
 
-    private static String defaultReplication = "http://mschoch.ic.ht/android";
-
     @Override
     protected String performWork() {
 
         ReplicationCommand pullReplicationCommand = new ReplicationCommand.Builder()
-        .source(defaultReplication)
+        .source(workloadRunner.getWorkloadReplicationUrl())
         .target(WorkloadHelper.DEFAULT_WORKLOAD_DB)
         .continuous(true)
         .build();
@@ -37,7 +35,7 @@ public class ContinuousReplication extends CouchbaseWorkload {
 
         ReplicationCommand pushReplicationCommand = new ReplicationCommand.Builder()
         .source(WorkloadHelper.DEFAULT_WORKLOAD_DB)
-        .target(defaultReplication)
+        .target(workloadRunner.getWorkloadReplicationUrl())
         .continuous(true)
         .build();
 

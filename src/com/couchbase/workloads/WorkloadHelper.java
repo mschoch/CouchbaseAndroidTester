@@ -15,6 +15,9 @@ public class WorkloadHelper {
 
     public static final String DEFAULT_WORKLOAD_DB = "workload";
 
+    public static final String DEFAULT_WORKLOAD_SYNC_URL = "http://mschoch.ic.ht/android";
+    public static final String DEFAULT_LOGS_SYNC_URL = "http://mschoch.ic.ht/android-logs";
+
     /**
      * List of workload classes
      */

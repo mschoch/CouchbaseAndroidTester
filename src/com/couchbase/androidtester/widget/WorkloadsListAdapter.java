@@ -1,11 +1,8 @@
 package com.couchbase.androidtester.widget;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 import android.content.Context;
-import android.content.res.AssetManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -17,20 +14,14 @@ import android.widget.TextView;
 
 import com.couchbase.androidtester.R;
 import com.couchbase.workloads.CouchbaseWorkload;
-import com.couchbase.workloads.CouchbaseWorkloadRunner;
 
-public class WorkloadsListAdapter extends ArrayAdapter<CouchbaseWorkload> implements OnClickListener, CouchbaseWorkloadRunner {
+public class WorkloadsListAdapter extends ArrayAdapter<CouchbaseWorkload> implements OnClickListener {
 
 	private  Context context;
 
 	public WorkloadsListAdapter(Context context, List<CouchbaseWorkload> workloads) {
 		super(context, 0, workloads);
 		this.context = context;
-
-		//set self as the workload runner
-		for (CouchbaseWorkload couchbaseWorkload : workloads) {
-			couchbaseWorkload.setCouchbaseWorkloadRunner(this);
-		}
 	}
 
 	@Override
@@ -95,25 +86,6 @@ public class WorkloadsListAdapter extends ArrayAdapter<CouchbaseWorkload> implem
 	    	//trigger update of buttons
 	    	notifyDataSetChanged();
     	}
-    }
-
-    //Couchbase Workload Runner Interface Methods
-    @Override
-    public void workloadReportsFinish(CouchbaseWorkload workload, String finishMessage) {
-    	notifyDataSetChanged();
-    };
-
-    @Override
-    public void workloadReportsProgress(CouchbaseWorkload workload,
-    		String progressMessage) {
-
-    	notifyDataSetChanged();
-    }
-
-    @Override
-    public InputStream openResource(String path) throws IOException {
-        AssetManager assetManager = context.getAssets();
-        return assetManager.open(path);
     }
 
 }

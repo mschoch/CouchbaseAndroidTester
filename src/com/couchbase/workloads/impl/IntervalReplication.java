@@ -15,8 +15,6 @@ public abstract class IntervalReplication extends CouchbaseWorkload {
     private final static Logger LOG = LoggerFactory
             .getLogger(IntervalReplication.class);
 
-    private static String defaultReplication = "http://mschoch.ic.ht/android";
-
     @Override
     protected String performWork() {
 
@@ -28,7 +26,7 @@ public abstract class IntervalReplication extends CouchbaseWorkload {
                     @Override
                     public void run() {
                         ReplicationCommand pullReplicationCommand = new ReplicationCommand.Builder()
-                        .source(defaultReplication)
+                        .source(workloadRunner.getWorkloadReplicationUrl())
                         .target(WorkloadHelper.DEFAULT_WORKLOAD_DB)
                         .continuous(false)
                         .build();
@@ -44,7 +42,7 @@ public abstract class IntervalReplication extends CouchbaseWorkload {
 
                         ReplicationCommand pushReplicationCommand = new ReplicationCommand.Builder()
                         .source(WorkloadHelper.DEFAULT_WORKLOAD_DB)
-                        .target(defaultReplication)
+                        .target(workloadRunner.getWorkloadReplicationUrl())
                         .continuous(false)
                         .build();
 

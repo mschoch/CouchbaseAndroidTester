@@ -1,5 +1,7 @@
 package com.couchbase.androidtester;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -16,6 +18,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
@@ -32,9 +35,10 @@ import com.couchbase.androidtester.monitors.MonitorHelper;
 import com.couchbase.androidtester.widget.MonitorsListAdapter;
 import com.couchbase.androidtester.widget.WorkloadsListAdapter;
 import com.couchbase.workloads.CouchbaseWorkload;
+import com.couchbase.workloads.CouchbaseWorkloadRunner;
 import com.couchbase.workloads.WorkloadHelper;
 
-public class CouchbaseAndroidTesterActivity extends Activity {
+public class CouchbaseAndroidTesterActivity extends Activity implements CouchbaseWorkloadRunner {
 
 	public static final String TAG = "CouchbaseTester";
 
@@ -186,6 +190,7 @@ public class CouchbaseAndroidTesterActivity extends Activity {
                 protected void onSuccess() {
                     //iterate through all the workloads and give them reference to Couch
                     for (CouchbaseWorkload workload : workloads) {
+                        workload.setCouchbaseWorkloadRunner(CouchbaseAndroidTesterActivity.this);
                         workload.setCouchDbInstance(couchDbInstance);
                         workload.setCouchDbConnector(couchDbConnector);
                     }
@@ -250,6 +255,44 @@ public class CouchbaseAndroidTesterActivity extends Activity {
                 return true;
         }
         return false;
+    }
+
+    //Couchbase Workload Runner Interface Methods
+
+    @Override
+    public InputStream openResource(String path) throws IOException {
+        AssetManager assetManager = getAssets();
+        return assetManager.open(path);
+    }
+
+    @Override
+    public String getLogsReplicationUrl() {
+        String logsSyncUrl = null;
+        Intent intent = getIntent();
+        if(intent != null) {
+            logsSyncUrl = intent.getStringExtra("LOGS_SYNC_URL");
+        }
+
+        if(logsSyncUrl == null) {
+            logsSyncUrl = WorkloadHelper.DEFAULT_LOGS_SYNC_URL;
+        }
+
+        return logsSyncUrl;
+    }
+
+    @Override
+    public String getWorkloadReplicationUrl() {
+        String workloadSyncUrl = null;
+        Intent intent = getIntent();
+        if(intent != null) {
+            workloadSyncUrl = intent.getStringExtra("WORKLOAD_SYNC_URL");
+        }
+
+        if(workloadSyncUrl == null) {
+            workloadSyncUrl = WorkloadHelper.DEFAULT_WORKLOAD_SYNC_URL;
+        }
+
+        return workloadSyncUrl;
     }
 
 }

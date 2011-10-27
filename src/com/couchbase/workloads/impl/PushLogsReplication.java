@@ -14,14 +14,12 @@ public class PushLogsReplication extends CouchbaseWorkload {
     private final static Logger LOG = LoggerFactory
             .getLogger(PushLogsReplication.class);
 
-    private static String defaultReplication = "http://mschoch.ic.ht/android-logs";
-
     @Override
     protected String performWork() {
 
         ReplicationCommand pushReplicationCommand = new ReplicationCommand.Builder()
         .source(CouchbaseAndroidTesterActivity.TEST_RESULTS_DB)
-        .target(defaultReplication)
+        .target(workloadRunner.getLogsReplicationUrl())
         .continuous(true)
         .build();
 

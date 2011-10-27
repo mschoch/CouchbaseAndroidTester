@@ -24,28 +24,76 @@ import com.couchbase.workloads.WorkloadHelper;
 
 public class JavaTester implements CouchbaseWorkloadRunner {
 
-    private static final String TAG = "JavaTester";
-
-    private List<CouchbaseWorkload> workloads = new ArrayList<CouchbaseWorkload>();
-
     private final static Logger LOG = LoggerFactory
             .getLogger(JavaTester.class);
 
+    private static final String TAG = "JavaTester";
+
+    private List<CouchbaseWorkload> workloads = new ArrayList<CouchbaseWorkload>();
+    private String workloadReplicaitonUrl;
+    private String logReplicationUrl;
+
     public static void usage() {
-        System.out.println("JavaTester <comma delimted list of workloads to run>");
+        System.out.println("JavaTester <options>");
+        System.out.println("\t-workload <comma-delimited list of workloads>  *REQUIRED*");
+        System.out.println("\t-workload_sync_url <url>");
+        System.out.println("\t-log_sync_url <url>");
+    }
+
+    public JavaTester(String workloadReplicaitonUrl, String logReplicationUrl) {
+        this.workloadReplicaitonUrl = workloadReplicaitonUrl;
+        this.logReplicationUrl = logReplicationUrl;
     }
 
     public static void main(String[] args) throws Exception {
 
-        JavaTester tester = new JavaTester();
+        String startWorkloadString = null;
+        String workloadSyncUrl = null;
+        String logSyncUrl = null;
 
-        //expect 1 argument, a comma-delimited list of workloads to run
-        if(args.length != 1) {
+        int i = 0;
+        String arg = null;
+        while (i < args.length && args[i].startsWith("-")) {
+            arg = args[i++];
+
+            if(arg.equals("-workload")) {
+                if (i < args.length) {
+                    startWorkloadString = args[i++];
+                }
+                else {
+                    System.err.println("-workload requires a string argument");
+                    System.exit(1);
+                }
+            }
+            else if(arg.equals("-workload_sync_url")) {
+                if (i < args.length) {
+                    workloadSyncUrl = args[i++];
+                }
+                else {
+                    System.err.println("-workload_sync_url requires a string argument");
+                    System.exit(1);
+                }
+            }
+            else if(arg.equals("-log_sync_url")) {
+                if (i < args.length) {
+                    logSyncUrl = args[i++];
+                }
+                else {
+                    System.err.println("-log_sync_url requires a string argument");
+                    System.exit(1);
+                }
+            }
+
+        }
+
+        //startWorkloadString is required
+        if(startWorkloadString == null) {
             usage();
             System.exit(1);
         }
 
-        String startWorkloadString = args[0];
+
+        JavaTester tester = new JavaTester(workloadSyncUrl, logSyncUrl);
         tester.run(startWorkloadString);
     }
 
@@ -98,15 +146,21 @@ public class JavaTester implements CouchbaseWorkloadRunner {
     }
 
     @Override
-    public void workloadReportsFinish(CouchbaseWorkload workload,
-            String finishMessage) {
-
+    public String getLogsReplicationUrl() {
+        String result = logReplicationUrl;
+        if(result == null) {
+            result = WorkloadHelper.DEFAULT_LOGS_SYNC_URL;
+        }
+        return result;
     }
 
     @Override
-    public void workloadReportsProgress(CouchbaseWorkload workload,
-            String progressMessage) {
-
+    public String getWorkloadReplicationUrl() {
+        String result = workloadReplicaitonUrl;
+        if(result == null) {
+            result = WorkloadHelper.DEFAULT_WORKLOAD_SYNC_URL;
+        }
+        return result;
     }
 
 }

@@ -15,53 +15,49 @@ The simplest way to start workloads is by pressing the Start button from the wor
 
     adb -e shell am start -a android.intent.action.MAIN -n com.couchbase.androidtester/.CouchbaseAndroidTesterActivity -e WORKLOAD com.couchbase.workloads.impl.CRUDDocuments
 
-NOTE: the value for the WORKLOAD parameter can be a comma-separated list of workloads to be run
+### Arguments
+
+-e WORKLOAD <comma-delimited list of workloads>
+ 
+-e WORKLOAD_SYNC_URL <URL to which the workload DB will be synced> 
+ 
+-e LOGS_SYNC_URL <URL to which logs will be pushed>
 
 ## Running workloads with Java from the command-line
 
-    java -cp bin:libs/org.ektorp-1.2.2-SNAPSHOT.jar:libs/slf4j-api-1.6.1.jar:libs/slf4j-jdk14-1.6.1.jar:javalibs/httpclient-4.1.1.jar:javalibs/httpcore-4.1.jar:javalibs/commons-logging-1.1.1.jar:javalibs/httpclient-cache-4.1.1.jar:libs/jackson-core-asl-1.8.5.jar:libs/jackson-mapper-asl-1.8.5.jar com.couchbase.javatester.JavaTester com.couchbase.workloads.impl.PhotoShare,com.couchbase.workloads.impl.FiveMinuteIntervalReplication < couch_urls.txt
+    java -cp bin:libs/org.ektorp-1.2.2-SNAPSHOT.jar:libs/slf4j-api-1.6.1.jar:libs/slf4j-jdk14-1.6.1.jar:javalibs/httpclient-4.1.1.jar:javalibs/httpcore-4.1.jar:javalibs/commons-logging-1.1.1.jar:javalibs/httpclient-cache-4.1.1.jar:libs/jackson-core-asl-1.8.5.jar:libs/jackson-mapper-asl-1.8.5.jar com.couchbase.javatester.JavaTester -workload com.couchbase.workloads.impl.PhotoShare,com.couchbase.workloads.impl.FiveMinuteIntervalReplication < couch_urls.txt
+    
+### Arguments
+
+-workload <comma-delimited list of workloads>
+
+-workload_sync_url <URL to which the workload DB will be synced>
+
+-log_sync_url <URL to which logs will be pushed>
     
 NOTE: the single command-line argument accepted is a comma-delimited list of workloads to be run.  A list of CouchDB server URLs must be provided on standard input, 1 URL per line (see the couch_urls.txt file for an example of the format)
 
 ## Provided Workloads
 
-- CRUD Documents
+- CRUD Documents  -  Create, Read, Update and Delete documents in sequence
 
-Create, Read, Update and Delete documents in sequence
+- Photo Share  -  Create Documents and Attach Photos
 
-- Photo Share
+- Calendar Usage  -  Create and Update Calendar Events
 
-Create Documents and Attach Photos
+- Continuous Replication  -  Continuous bi-directional replication of the workload database to the cloud
 
-- Calendar Usage
-
-Create and Update Calendar Events
-
-- Continuous Replication
-
-Continuous bi-directional replication of the workload database to the cloud
-
-- Five Minute Interval Replication
-
-Non-continuous replication of the workload database at 5 minute intervals
+- Five Minute Interval Replication  -  Non-continuous replication of the workload database at 5 minute intervals
 
 ## Provided Monitors
 
-- Battery Level
+- Battery Level  -  Records the current battery level and plug status
 
-Records the current battery level and plug status
+- Couchbase  -  Records the status of Couchbase and the host/port
 
-- Couchbase
+- Memory  -  Records various memory statistics provided by the Android platform
 
-Records the status of Couchbase and the host/port
-
-- Memory
-
-Records various memory statistics provided by the Android platform
-
-- Network
-
-Records the network status and network interface type
+- Network  -  Records the network status and network interface type
 
 ## Adding your own workloads
 
