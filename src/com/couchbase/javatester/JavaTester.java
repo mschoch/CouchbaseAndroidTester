@@ -235,7 +235,6 @@ public class JavaTester implements CouchbaseWorkloadRunner {
     @Override
     public void publishedWorkloadDocumentWithIdandRevision(String id, String rev) {
         long currentTime = System.currentTimeMillis();
-        System.out.println("Created " + id + "-" + rev + " at " + currentTime);
         synchronized (this) {
             //place this id and timestamp in both maps
             //if we were track older revision it will get overwritten
