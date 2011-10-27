@@ -27,6 +27,7 @@ public class PhotoShare extends CouchbaseWorkload {
             couchDbConnector.create(document);
             String id = (String)document.get("_id");
             String rev = (String)document.get("_rev");
+            workloadRunner.publishedWorkloadDocumentWithIdandRevision(id, rev);
 
             String filename = "small.jpg";
             if(photosUploaded % 2 == 0) {
@@ -35,7 +36,8 @@ public class PhotoShare extends CouchbaseWorkload {
 
             try {
                 AttachmentInputStream ais = new AttachmentInputStream(filename, workloadRunner.openResource("attachments/images/" + filename), "image/jpeg");
-                couchDbConnector.createAttachment(id, rev, ais);
+                rev = couchDbConnector.createAttachment(id, rev, ais);
+                workloadRunner.publishedWorkloadDocumentWithIdandRevision(id, rev);
                 photosUploaded++;
                 //task.publishWorkProgress("Uploaded Photo " + photosUploaded);
             } catch (IOException e) {

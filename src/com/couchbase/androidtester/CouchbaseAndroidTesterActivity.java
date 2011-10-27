@@ -295,4 +295,9 @@ public class CouchbaseAndroidTesterActivity extends Activity implements Couchbas
         return workloadSyncUrl;
     }
 
+    @Override
+    public void publishedWorkloadDocumentWithIdandRevision(String id, String rev) {
+        //the android runner does not currently use this mechanism
+    }
+
 }

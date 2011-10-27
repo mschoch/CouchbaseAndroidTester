@@ -18,6 +18,7 @@ public class Calendar extends CouchbaseWorkload {
             //create a calendar item
             Map<String,Object> document = documentTemplate();
             couchDbConnector.create(document);
+            workloadRunner.publishedWorkloadDocumentWithIdandRevision((String)document.get("_id"), (String)document.get("_rev"));
             calendarEventsCreated++;
 
             //wait
@@ -31,6 +32,7 @@ public class Calendar extends CouchbaseWorkload {
             //update the calendar item
             document = cancelEvent(document);
             couchDbConnector.update(document);
+            workloadRunner.publishedWorkloadDocumentWithIdandRevision((String)document.get("_id"), (String)document.get("_rev"));
 
             //wait some more
             try {

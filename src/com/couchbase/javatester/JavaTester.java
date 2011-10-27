@@ -6,18 +6,27 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.ektorp.CouchDbConnector;
 import org.ektorp.CouchDbInstance;
+import org.ektorp.DbInfo;
+import org.ektorp.changes.ChangesCommand;
+import org.ektorp.changes.ChangesFeed;
+import org.ektorp.changes.DocumentChange;
 import org.ektorp.http.HttpClient;
 import org.ektorp.http.StdHttpClient;
 import org.ektorp.impl.StdCouchDbInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.couchbase.util.MovingAverage;
 import com.couchbase.workloads.CouchbaseWorkload;
 import com.couchbase.workloads.CouchbaseWorkloadRunner;
 import com.couchbase.workloads.WorkloadHelper;
@@ -32,6 +41,9 @@ public class JavaTester implements CouchbaseWorkloadRunner {
     private List<CouchbaseWorkload> workloads = new ArrayList<CouchbaseWorkload>();
     private String workloadReplicaitonUrl;
     private String logReplicationUrl;
+    private Map<String, String> changeIdRevisions = new HashMap<String,String>();
+    private Map<String, Long> changeIdTimestamps = new HashMap<String,Long>();
+    private MovingAverage movingAverage = new MovingAverage(10);
 
     public static void usage() {
         System.out.println("JavaTester <options>");
@@ -108,6 +120,63 @@ public class JavaTester implements CouchbaseWorkloadRunner {
             System.exit(1);
         }
 
+
+        new Thread(new Runnable() {
+
+            public void run() {
+                try {
+                    URL url = new URL(getWorkloadReplicationUrl());
+                    String host = url.getHost();
+                    int port = url.getPort();
+                    if(port < 0) {
+                        port = 80;
+                    }
+                    String path = url.getPath();
+                    if(path.startsWith("/")) {
+                        path = path.substring(1);
+                    }
+
+                    HttpClient httpClient = new StdHttpClient.Builder().host(host).port(port).build();
+                    CouchDbInstance couchDbInstance = new StdCouchDbInstance(httpClient);
+                    CouchDbConnector couchDbConnector = couchDbInstance.createConnector(path, false);
+
+                    DbInfo dbInfo = couchDbConnector.getDbInfo();
+                    long lastUpdateSeq = dbInfo.getUpdateSeq();
+
+                    ChangesCommand cmd = new ChangesCommand.Builder()
+                                                           .since(lastUpdateSeq)
+                                                           .includeDocs(false)
+                                                           .build();
+
+                    ChangesFeed feed = couchDbConnector.changesFeed(cmd);
+
+                    while (feed.isAlive()) {
+                        DocumentChange change = feed.next();
+                        String id = change.getId();
+                        String rev = change.getRevision();
+                        Long val = getAndRemoveDocumentWithIdAndRevision(id, rev);
+                        if(val != null) {
+                            long current = System.currentTimeMillis();
+                            long delta = current - val;
+                            movingAverage.newNum(delta);
+                            long avgValue = movingAverage.getAvg();
+                            if(avgValue > 0) {
+                                System.out.println("Average latency is " + movingAverage.getAvg());
+                            }
+                        }
+
+                    }
+
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    //ignore
+                }
+            }
+
+        }).start();
+
+
         BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
         String str;
         while ((str = stdin.readLine()) != null) {
@@ -159,6 +228,32 @@ public class JavaTester implements CouchbaseWorkloadRunner {
         String result = workloadReplicaitonUrl;
         if(result == null) {
             result = WorkloadHelper.DEFAULT_WORKLOAD_SYNC_URL;
+        }
+        return result;
+    }
+
+    @Override
+    public void publishedWorkloadDocumentWithIdandRevision(String id, String rev) {
+        long currentTime = System.currentTimeMillis();
+        System.out.println("Created " + id + "-" + rev + " at " + currentTime);
+        synchronized (this) {
+            //place this id and timestamp in both maps
+            //if we were track older revision it will get overwritten
+            changeIdRevisions.put(id, rev);
+            changeIdTimestamps.put(id, currentTime);
+        }
+    }
+
+    public Long getAndRemoveDocumentWithIdAndRevision(String id, String rev) {
+        Long result = null;
+        synchronized (this) {
+            //if the revision we see in the changes feed is the one we're looking for
+            //remove from both maps, return timestamp
+            String trackedRev = changeIdRevisions.get(id);
+            if((trackedRev != null) && (trackedRev.equals(rev))) {
+                changeIdRevisions.remove(id);
+                result = changeIdTimestamps.remove(id);
+            }
         }
         return result;
     }

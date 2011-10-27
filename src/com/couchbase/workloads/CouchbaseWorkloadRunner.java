@@ -12,4 +12,6 @@ public interface CouchbaseWorkloadRunner {
 
 	public String getLogsReplicationUrl();
 
+	public void publishedWorkloadDocumentWithIdandRevision(String id, String rev);
+
 }

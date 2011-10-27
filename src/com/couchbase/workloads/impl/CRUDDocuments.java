@@ -24,6 +24,7 @@ public class CRUDDocuments extends CouchbaseWorkload {
 			//create
 			HashMap<String, String> document = documentTemplate();
 			couchDbConnector.create(document);
+			workloadRunner.publishedWorkloadDocumentWithIdandRevision((String)document.get("_id"), (String)document.get("_rev"));
 			documentsCreated++;
 
 			String documentId = document.get("_id");
@@ -40,6 +41,7 @@ public class CRUDDocuments extends CouchbaseWorkload {
 			} catch (UpdateConflictException e) {
 			    LOG.debug(CouchbaseAndroidTesterActivity.TAG, "Update Conflict", e);
 			}
+			workloadRunner.publishedWorkloadDocumentWithIdandRevision((String)documentRead.get("_id"), (String)documentRead.get("_rev"));
 
 			//delete
 			couchDbConnector.delete(documentRead);
