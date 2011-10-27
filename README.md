@@ -25,7 +25,7 @@ The simplest way to start workloads is by pressing the Start button from the wor
 
 ## Running workloads with Java from the command-line
 
-    java -cp bin:libs/org.ektorp-1.2.2-SNAPSHOT.jar:libs/slf4j-api-1.6.1.jar:libs/slf4j-jdk14-1.6.1.jar:javalibs/httpclient-4.1.1.jar:javalibs/httpcore-4.1.jar:javalibs/commons-logging-1.1.1.jar:javalibs/httpclient-cache-4.1.1.jar:libs/jackson-core-asl-1.8.5.jar:libs/jackson-mapper-asl-1.8.5.jar com.couchbase.javatester.JavaTester -workload com.couchbase.workloads.impl.PhotoShare,com.couchbase.workloads.impl.FiveMinuteIntervalReplication < couch_urls.txt
+    java -cp bin:libs/org.ektorp-1.2.2-SNAPSHOT.jar:libs/slf4j-api-1.6.1.jar:libs/slf4j-jdk14-1.6.1.jar:javalibs/httpclient-4.1.1.jar:javalibs/httpcore-4.1.jar:javalibs/commons-logging-1.1.1.jar:javalibs/httpclient-cache-4.1.1.jar:libs/jackson-core-asl-1.8.5.jar:libs/jackson-mapper-asl-1.8.5.jar:libs/commons-io-2.0.1.jar com.couchbase.javatester.JavaTester -workload com.couchbase.workloads.impl.PhotoShare,com.couchbase.workloads.impl.FiveMinuteIntervalReplication < couch_urls.txt
     
 ### Arguments
 
