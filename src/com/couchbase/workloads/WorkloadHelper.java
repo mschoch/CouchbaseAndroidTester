@@ -13,6 +13,8 @@ public class WorkloadHelper {
     private final static Logger LOG = LoggerFactory
             .getLogger(WorkloadHelper.class);
 
+    public static final String EXTRA_WORKLOAD_DB = "WORKLOAD_DB";
+
     public static final String DEFAULT_WORKLOAD_DB = "workload";
 
     public static final String DEFAULT_WORKLOAD_SYNC_URL = "http://mschoch.ic.ht/android";

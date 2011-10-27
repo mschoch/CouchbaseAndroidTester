@@ -15,8 +15,14 @@ public abstract class IntervalReplication extends CouchbaseWorkload {
     private final static Logger LOG = LoggerFactory
             .getLogger(IntervalReplication.class);
 
+    private String workloadDb = WorkloadHelper.DEFAULT_WORKLOAD_DB;
+
     @Override
     protected String performWork() {
+
+        if(extras.containsKey(WorkloadHelper.EXTRA_WORKLOAD_DB)) {
+            workloadDb = (String)extras.get(WorkloadHelper.EXTRA_WORKLOAD_DB);
+        }
 
         while(!thread.isCancelled()) {
             try {
@@ -27,7 +33,7 @@ public abstract class IntervalReplication extends CouchbaseWorkload {
                     public void run() {
                         ReplicationCommand pullReplicationCommand = new ReplicationCommand.Builder()
                         .source(workloadRunner.getWorkloadReplicationUrl())
-                        .target(WorkloadHelper.DEFAULT_WORKLOAD_DB)
+                        .target(workloadDb)
                         .continuous(false)
                         .build();
 
@@ -41,7 +47,7 @@ public abstract class IntervalReplication extends CouchbaseWorkload {
                         }
 
                         ReplicationCommand pushReplicationCommand = new ReplicationCommand.Builder()
-                        .source(WorkloadHelper.DEFAULT_WORKLOAD_DB)
+                        .source(workloadDb)
                         .target(workloadRunner.getWorkloadReplicationUrl())
                         .continuous(false)
                         .build();

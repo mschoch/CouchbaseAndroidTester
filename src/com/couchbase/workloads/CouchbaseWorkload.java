@@ -1,5 +1,8 @@
 package com.couchbase.workloads;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.ektorp.CouchDbConnector;
 import org.ektorp.CouchDbInstance;
 
@@ -13,6 +16,8 @@ public abstract class CouchbaseWorkload {
 	protected boolean indeterminate = true;
 	protected CouchbaseWorkloadThread thread = null;
 
+	protected Map<String, Object> extras = new HashMap<String, Object>();
+
 	public void setCouchbaseWorkloadRunner(CouchbaseWorkloadRunner workloadRunner) {
 		this.workloadRunner = workloadRunner;
 	}
@@ -23,6 +28,10 @@ public abstract class CouchbaseWorkload {
 
 	public void setCouchDbConnector(CouchDbConnector couchDbConnector) {
 	    this.couchDbConnector = couchDbConnector;
+	}
+
+	public void addExtra(String key, Object value) {
+	    extras.put(key,  value);
 	}
 
 	public String getName() {

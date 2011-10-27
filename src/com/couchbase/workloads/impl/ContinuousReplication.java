@@ -15,12 +15,18 @@ public class ContinuousReplication extends CouchbaseWorkload {
     private final static Logger LOG = LoggerFactory
             .getLogger(ContinuousReplication.class);
 
+    private String workloadDb = WorkloadHelper.DEFAULT_WORKLOAD_DB;
+
     @Override
     protected String performWork() {
 
+        if(extras.containsKey(WorkloadHelper.EXTRA_WORKLOAD_DB)) {
+            workloadDb = (String)extras.get(WorkloadHelper.EXTRA_WORKLOAD_DB);
+        }
+
         ReplicationCommand pullReplicationCommand = new ReplicationCommand.Builder()
         .source(workloadRunner.getWorkloadReplicationUrl())
-        .target(WorkloadHelper.DEFAULT_WORKLOAD_DB)
+        .target(workloadDb)
         .continuous(true)
         .build();
 
@@ -34,7 +40,7 @@ public class ContinuousReplication extends CouchbaseWorkload {
         }
 
         ReplicationCommand pushReplicationCommand = new ReplicationCommand.Builder()
-        .source(WorkloadHelper.DEFAULT_WORKLOAD_DB)
+        .source(workloadDb)
         .target(workloadRunner.getWorkloadReplicationUrl())
         .continuous(true)
         .build();

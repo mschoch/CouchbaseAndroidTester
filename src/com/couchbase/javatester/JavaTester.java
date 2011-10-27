@@ -181,9 +181,25 @@ public class JavaTester implements CouchbaseWorkloadRunner {
         String str;
         while ((str = stdin.readLine()) != null) {
             //expect each line to be a URL
-            HttpClient httpClient = new StdHttpClient.Builder().url(str).build();
+
+            URL url = new URL(str);
+            String host = url.getHost();
+            int port = url.getPort();
+            if(port < 0) {
+                port = 80;
+            }
+            String path = url.getPath();
+            if(path.startsWith("/")) {
+                path = path.substring(1);
+            }
+
+            HttpClient httpClient = new StdHttpClient.Builder().host(host).port(port).build();
             CouchDbInstance couchDbInstance = new StdCouchDbInstance(httpClient);
-            CouchDbConnector couchDbConnector = couchDbInstance.createConnector(WorkloadHelper.DEFAULT_WORKLOAD_DB, true);
+            if(path == null || path.equals("")) {
+                path = WorkloadHelper.DEFAULT_WORKLOAD_DB;
+            }
+
+            CouchDbConnector couchDbConnector = couchDbInstance.createConnector(path, true);
 
 
             for(String workloadName : startWorkloads) {
@@ -191,6 +207,7 @@ public class JavaTester implements CouchbaseWorkloadRunner {
                 workload.setCouchDbInstance(couchDbInstance);
                 workload.setCouchDbConnector(couchDbConnector);
                 workload.setCouchbaseWorkloadRunner(this);
+                workload.addExtra(WorkloadHelper.EXTRA_WORKLOAD_DB, path);
                 LOG.debug(TAG, "Starting workload " + workload.getName());
                 workload.start();
                 //add to our list
