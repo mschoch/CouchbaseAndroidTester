@@ -17,23 +17,23 @@ The simplest way to start workloads is by pressing the Start button from the wor
 
 ### Arguments
 
--e WORKLOAD <comma-delimited list of workloads>
+-e WORKLOAD &lt;comma-delimited list of workloads&gt;
  
--e WORKLOAD_SYNC_URL <URL to which the workload DB will be synced> 
+-e WORKLOAD_SYNC_URL &lt;URL to which the workload DB will be synced&gt; 
  
--e LOGS_SYNC_URL <URL to which logs will be pushed>
+-e LOGS_SYNC_URL &lt;URL to which logs will be pushed&gt;
 
 ## Running workloads with Java from the command-line
 
-    java -cp bin:libs/org.ektorp-1.2.2-SNAPSHOT.jar:libs/slf4j-api-1.6.1.jar:libs/slf4j-jdk14-1.6.1.jar:javalibs/httpclient-4.1.1.jar:javalibs/httpcore-4.1.jar:javalibs/commons-logging-1.1.1.jar:javalibs/httpclient-cache-4.1.1.jar:libs/jackson-core-asl-1.8.5.jar:libs/jackson-mapper-asl-1.8.5.jar com.couchbase.javatester.JavaTester -workload com.couchbase.workloads.impl.PhotoShare,com.couchbase.workloads.impl.FiveMinuteIntervalReplication < couch_urls.txt
+    java -cp bin:libs/org.ektorp-1.2.2-SNAPSHOT.jar:libs/slf4j-api-1.6.1.jar:libs/slf4j-jdk14-1.6.1.jar:javalibs/httpclient-4.1.1.jar:javalibs/httpcore-4.1.jar:javalibs/commons-logging-1.1.1.jar:javalibs/httpclient-cache-4.1.1.jar:libs/jackson-core-asl-1.8.5.jar:libs/jackson-mapper-asl-1.8.5.jar com.couchbase.javatester.JavaTester -workload com.couchbase.workloads.impl.PhotoShare,com.couchbase.workloads.impl.FiveMinuteIntervalReplication &lt; couch_urls.txt
     
 ### Arguments
 
--workload <comma-delimited list of workloads>
+-workload &lt;comma-delimited list of workloads&gt;
 
--workload_sync_url <URL to which the workload DB will be synced>
+-workload_sync_url &lt;URL to which the workload DB will be synced&gt;
 
--log_sync_url <URL to which logs will be pushed>
+-log_sync_url &lt;URL to which logs will be pushed&gt;
     
 NOTE: the single command-line argument accepted is a comma-delimited list of workloads to be run.  A list of CouchDB server URLs must be provided on standard input, 1 URL per line (see the couch_urls.txt file for an example of the format)
 
