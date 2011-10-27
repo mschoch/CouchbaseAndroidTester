@@ -23,7 +23,7 @@ public class Calendar extends CouchbaseWorkload {
 
             //wait
             try {
-                int delayBetweenPosts = 1000 * (500 + new Random().nextInt(500));
+                int delayBetweenPosts = 1 * (500 + new Random().nextInt(500));
                 Thread.sleep(delayBetweenPosts);
             } catch (InterruptedException e) {
                 //ignore
@@ -36,7 +36,7 @@ public class Calendar extends CouchbaseWorkload {
 
             //wait some more
             try {
-                int delayBetweenPosts = 1000 * (500 + new Random().nextInt(500));
+                int delayBetweenPosts = 1 * (500 + new Random().nextInt(500));
                 Thread.sleep(delayBetweenPosts);
             } catch (InterruptedException e) {
                 //ignore
