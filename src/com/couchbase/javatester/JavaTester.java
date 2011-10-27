@@ -43,7 +43,7 @@ public class JavaTester implements CouchbaseWorkloadRunner {
     private String logReplicationUrl;
     private Map<String, String> changeIdRevisions = new HashMap<String,String>();
     private Map<String, Long> changeIdTimestamps = new HashMap<String,Long>();
-    private MovingAverage movingAverage = new MovingAverage(10);
+    private MovingAverage movingAverage = new MovingAverage(100);
 
     public static void usage() {
         System.out.println("JavaTester <options>");
